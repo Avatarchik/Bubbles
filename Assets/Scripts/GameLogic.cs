@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Random = UnityEngine.Random;
 
-public class Spawner : MonoBehaviour
+public class GameLogic : MonoBehaviour
 {
     [SerializeField]
     private Transform spawnArea;

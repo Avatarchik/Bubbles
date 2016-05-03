@@ -3,10 +3,10 @@ using System.Collections;
 
 public class SpawnCommand : Command {
 
-    private Spawner s;
+    private GameLogic s;
     private SpawnParams p;
 
-    public SpawnCommand(Spawner s,SpawnParams p)
+    public SpawnCommand(GameLogic s,SpawnParams p)
     {
         this.s = s;
         this.p = p;
