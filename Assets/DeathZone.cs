@@ -3,7 +3,7 @@ using System.Collections;
 
 public class DeathZone : MonoBehaviour 
 {
-	void OnTriggerEnter2D(Collider2D other)
+	void OnTriggerEnter(Collider other)
 	{
 		Destroy (other.gameObject);
 	}
