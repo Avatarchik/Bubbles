@@ -11,17 +11,19 @@ public class Ball : MonoBehaviour
     private TextureSize size;
     private MeshRenderer cachedRenderer;
 
+    private SpawnParams spawnParams;
+
     private void Awake()
     {
         cachedRenderer = GetComponent<MeshRenderer>();
     }
 
-    public void Init(TextureSize size, int actualSize, Vector3 pos)
+    public void Init(SpawnParams spawnParams)
     {
-        transform.position = pos;
-        transform.localScale = Vector3.one * actualSize;
+        size = spawnParams.size;
 
-        this.size = size;
+        transform.position = spawnParams.pos;
+        transform.localScale = Vector3.one * spawnParams.actualSize;
 
         speed = 300f / (int)size;
         var texture = textureManager.GetTexture(size, Utils.GetRandomEnum<TextureColor>());
@@ -41,6 +43,16 @@ public class Ball : MonoBehaviour
 
     public void DestroyBall()
     {
-        gameObject.SetActive(false);
+        CommandHadler.Instance.PostCommand(new DestroyCommand(gameObject));
+    }
+
+    public SpawnParams GetParams()
+    {
+        return new SpawnParams()
+        {
+            pos = transform.position,
+            actualSize = (int)transform.localScale.x,
+            size = size
+        };
     }
 }

@@ -40,7 +40,7 @@ public class Spawner : MonoBehaviour
 
     private IEnumerator LoadPrefabFromAssetBundle()
     {
-        var bundleUrl = string.Format("file:///{0}/{1}",Application.dataPath, "resources");
+        var bundleUrl = string.Format("file:///{0}/{1}", Application.dataPath, "resources");
 
         using (WWW www = new WWW(bundleUrl))
         {
@@ -117,6 +117,29 @@ public class Spawner : MonoBehaviour
 
     private void SpawnBubble()
     {
+        var paramsSpawn = GetRandomBubbleParams();
+
+        CommandHadler.Instance.PostCommand(new SpawnCommand(this, paramsSpawn));
+    }
+
+    private SpawnParams GetRandomBubbleParams()
+    {
+        var spawnParams = new SpawnParams();
+
+        spawnParams.size = Utils.GetRandomEnum<TextureSize>();
+        spawnParams.actualSize = (int)spawnParams.size * 16;
+
+        var spawnSize = spawnArea.localScale.x / 2f;
+
+        var xRandom = Random.Range(spawnArea.position.x - spawnSize + spawnParams.actualSize / 2f,
+            spawnArea.position.x + spawnSize - spawnParams.actualSize / 2f);
+        spawnParams.pos = new Vector3(xRandom, spawnArea.position.y + spawnParams.actualSize / 2f, 0f);
+
+        return spawnParams;
+    }
+
+    public void Spawn(SpawnParams spawnParams)
+    {
         Ball ball;
 
         if (bubbleshCache.Any(b => !b.gameObject.activeSelf))
@@ -131,19 +154,16 @@ public class Spawner : MonoBehaviour
             bubbleshCache.Add(ball);
         }
 
-        var size = Utils.GetRandomEnum<TextureSize>();
-        var actualSize = (int)size * 16;
-
-        var spawnSize = spawnArea.localScale.x / 2f;
-
-        var xRandom = Random.Range(spawnArea.position.x - spawnSize + actualSize / 2f, spawnArea.position.x + spawnSize - actualSize / 2f);
-        var pos = new Vector3(xRandom, spawnArea.position.y + actualSize / 2f, 0f);
-
-        ball.transform.position = pos;
-
         ball.gameObject.SetActive(true);
-        ball.Init(size, actualSize, pos);
+        ball.Init(spawnParams);
 
         spawnCount++;
     }
+}
+
+public class SpawnParams
+{
+    public int actualSize;
+    public Vector3 pos;
+    public TextureSize size;
 }
