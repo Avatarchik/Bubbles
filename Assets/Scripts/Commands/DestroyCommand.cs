@@ -1,18 +1,25 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
-
+[Serializable]
 public class DestroyCommand : Command
 {
-    private GameObject g;
+    private string g;
 
-    public DestroyCommand(GameObject g)
+    public DestroyCommand(string g)
     {
         this.g = g;
     }
 
     public override void Execute()
     {
-        g.SetActive(false);
+        var go = GameObject.Find(g);
+
+        if (go != null)
+        {
+            go.SetActive(false);
+        }
+
     }
 }
 

@@ -2,19 +2,16 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 
 public interface ITextureManager
 {
-    event Action preparingComplete;
-    Texture GetTexture(TextureSize size, TextureColor color);
-    void StartPrepareTextures();
-    void ClearAllTextures();
+    Texture GetTexture(BallSize size, BallColor color);
+    void NewLevelPrepare(Action onComplete);
 }
 
 public class TextureManager : MonoBehaviour, ITextureManager
 {
-    private Dictionary<ResourceKey, Texture> cache = new Dictionary<ResourceKey, Texture>();
+    private readonly Dictionary<ResourceKey, Texture> cache = new Dictionary<ResourceKey, Texture>();
     private const int BASE_SIZE = 32;
 
     public List<Texture> list = new List<Texture>();
@@ -26,7 +23,7 @@ public class TextureManager : MonoBehaviour, ITextureManager
 
     public event Action preparingComplete;
 
-    public Texture GetTexture(TextureSize size, TextureColor color)
+    public Texture GetTexture(BallSize size, BallColor color)
     {
         var key = new ResourceKey(size, color);
 
@@ -40,9 +37,9 @@ public class TextureManager : MonoBehaviour, ITextureManager
 
     private IEnumerator Prepare()
     {
-        foreach (TextureSize size in Enum.GetValues(typeof(TextureSize)))
+        foreach (BallSize size in Enum.GetValues(typeof(BallSize)))
         {
-            foreach (TextureColor color in Enum.GetValues(typeof(TextureColor)))
+            foreach (BallColor color in Enum.GetValues(typeof(BallColor)))
             {
                 var key = new ResourceKey(size, color);
                 Texture texture = null;
@@ -107,22 +104,22 @@ public class TextureManager : MonoBehaviour, ITextureManager
         callback(texture);
     }
 
-    private Color GetActualColor(TextureColor color)
+    private Color GetActualColor(BallColor color)
     {
         switch (color)
         {
-            case TextureColor.Red:
+            case BallColor.Red:
                 return Color.red;
-            case TextureColor.Greed:
+            case BallColor.Greed:
                 return Color.green;
-            case TextureColor.Blue:
+            case BallColor.Blue:
                 return Color.blue;
             default:
                 throw new ArgumentOutOfRangeException("color", color, null);
         }
     }
 
-    public void ClearAllTextures()
+    public void NewLevelPrepare(Action onComplete)
     {
         foreach (var texture in cache)
         {
@@ -130,14 +127,16 @@ public class TextureManager : MonoBehaviour, ITextureManager
         }
 
         cache.Clear();
+        StartPrepareTextures();
+        preparingComplete += onComplete;
     }
 
     private class ResourceKey : IEquatable<ResourceKey>
     {
-        public readonly TextureSize size;
-        public readonly TextureColor color;
+        public readonly BallSize size;
+        public readonly BallColor color;
 
-        public ResourceKey(TextureSize size, TextureColor color)
+        public ResourceKey(BallSize size, BallColor color)
         {
             this.size = size;
             this.color = color;
@@ -158,42 +157,4 @@ public class TextureManager : MonoBehaviour, ITextureManager
             return color == other.color && size == other.size;
         }
     }
-}
-
-
-public enum TextureSize
-{
-    Small = 1,
-    Normal = 2,
-    Big = 4,
-    Biggest = 8
-}
-
-public enum TextureColor
-{
-    Red = 0,
-    Greed,
-    Blue
-}
-
-public class ThreadedAction
-{
-    public ThreadedAction(Action action)
-    {
-        var thread = new Thread(() =>
-        {
-            if (action != null)
-                action();
-            _isDone = true;
-        });
-        thread.Start();
-    }
-
-    public IEnumerator WaitForComplete()
-    {
-        while (!_isDone)
-            yield return null;
-    }
-
-    private bool _isDone;
 }

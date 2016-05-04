@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 public class Ball : MonoBehaviour
 {
@@ -8,25 +6,35 @@ public class Ball : MonoBehaviour
     public static Menu menu;
 
     private float speed = 30f;
-    private TextureSize size;
+    private BallSize size;
+
     private MeshRenderer cachedRenderer;
+    private GameObject cachedGo;
 
     private SpawnParams spawnParams;
 
+    public bool ActiveSelf
+    {
+        get { return cachedGo.activeSelf; }
+    }
+
     private void Awake()
     {
+        cachedGo = gameObject;
         cachedRenderer = GetComponent<MeshRenderer>();
     }
 
     public void Init(SpawnParams spawnParams)
     {
+        this.spawnParams = spawnParams;
+
         size = spawnParams.size;
 
-        transform.position = spawnParams.pos;
+        transform.position = new Vector3(spawnParams.posX, spawnParams.posY, 0f);
         transform.localScale = Vector3.one * spawnParams.actualSize;
 
         speed = 300f / (int)size;
-        var texture = textureManager.GetTexture(size, Utils.GetRandomEnum<TextureColor>());
+        var texture = textureManager.GetTexture(size, spawnParams.color);
         cachedRenderer.material.SetTexture("_MainTex", texture);
     }
 
@@ -43,16 +51,6 @@ public class Ball : MonoBehaviour
 
     public void DestroyBall()
     {
-        CommandHadler.Instance.PostCommand(new DestroyCommand(gameObject));
-    }
-
-    public SpawnParams GetParams()
-    {
-        return new SpawnParams()
-        {
-            pos = transform.position,
-            actualSize = (int)transform.localScale.x,
-            size = size
-        };
+        CommandHadler.Instance.PostCommand(new DestroyCommand(spawnParams.id));
     }
 }

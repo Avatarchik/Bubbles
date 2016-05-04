@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class CommandHadler : MonoBehaviour
 {
+    public TCPServer server;
+
     public static CommandHadler Instance
     {
         get; private set;
@@ -23,7 +24,16 @@ public class CommandHadler : MonoBehaviour
 
     private void Update()
     {
-        if (commands.Count > 0)
-            commands.Dequeue().Execute();
+        if (commands.Count <= 0)
+        {
+            return;
+        }
+        var command = commands.Dequeue();
+        command.Execute();
+
+        if (GameLogic.IsServer)
+        {
+            server.Send(command);
+        }
     }
 }

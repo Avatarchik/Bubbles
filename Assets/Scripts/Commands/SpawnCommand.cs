@@ -1,19 +1,18 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
+using UnityEngine;
 
-public class SpawnCommand : Command {
-
-    private GameLogic s;
+[Serializable]
+public class SpawnCommand : Command
+{
     private SpawnParams p;
 
-    public SpawnCommand(GameLogic s,SpawnParams p)
+    public SpawnCommand(SpawnParams p)
     {
-        this.s = s;
         this.p = p;
     }
 
     public override void Execute()
     {
-        s.Spawn(p);
+        GameObject.FindObjectOfType<Spawner>().Spawn(p);
     }
 }

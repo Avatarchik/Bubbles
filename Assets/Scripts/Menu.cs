@@ -1,7 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
-using System.Reflection.Emit;
 using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
@@ -21,7 +19,7 @@ public class Menu : MonoBehaviour
 
     private TimeSpan timeSpan = new TimeSpan();
 
-    void Awake()
+    private void Awake()
     {
         play.onClick.AddListener(() =>
         {
@@ -31,11 +29,14 @@ public class Menu : MonoBehaviour
                 playGame();
             }
 
-            MonoTimer.Timer.onTick += Timer_onTick;
+            MonoTimer.Timer.onTick += TimerTick;
             scoreValue = 0;
         });
+
         connect.onClick.AddListener(() =>
         {
+            HideButtons();
+
             if (connectGame != null)
             {
                 connectGame(field.text);
@@ -51,7 +52,7 @@ public class Menu : MonoBehaviour
 
     }
 
-    private void Timer_onTick()
+    private void TimerTick()
     {
         timeSpan = timeSpan.Add(new TimeSpan(0, 0, 0, 1));
         timer.text = string.Format("{0:hh\\:mm\\:ss}", timeSpan);
