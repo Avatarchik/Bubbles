@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 public class Spawner : MonoBehaviour
@@ -11,8 +12,15 @@ public class Spawner : MonoBehaviour
 
     [SerializeField]
     private Transform spawnArea;
-    [SerializeField]
+
     private GameObject prefab;
+
+    [Inject]
+    private CommandHadler commandHadler;
+    [Inject]
+    private ITextureManager textureManager;
+    [Inject]
+    private Menu menu;
 
     private IEnumerator Start()
     {
@@ -34,7 +42,7 @@ public class Spawner : MonoBehaviour
             return;
         }
         var paramsSpawn = GetRandomBubbleParams();
-        CommandHadler.Instance.PostCommand(new SpawnCommand(paramsSpawn));
+        commandHadler.PostCommand(new SpawnCommand(paramsSpawn));
     }
 
     private SpawnParams GetRandomBubbleParams()
@@ -76,7 +84,7 @@ public class Spawner : MonoBehaviour
 
         ball.gameObject.SetActive(true);
         ball.name = spawnParams.id;
-        ball.Init(spawnParams);
+        ball.Init(spawnParams, textureManager,menu, commandHadler);
     }
 
     public IEnumerator LoadPrefabFromAssetBundle()

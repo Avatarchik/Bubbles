@@ -1,21 +1,22 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Zenject;
 
-public class GameLogic : MonoBehaviour
+public class GameLogic : MonoBehaviour, IInitializable
 {
     public static bool IsServer
     {
         get; private set;
     }
 
-    [SerializeField]
-    private TextureManager textureManager;
-    [SerializeField]
+    [Inject]
+    private ITextureManager textureManager;
+    [Inject]
     private Menu menu;
 
-    [SerializeField]
+    [Inject]
     private TCPClient client;
-    [SerializeField]
+    [Inject]
     private TCPServer server;
 
     private float timeSpawn = 1f;
@@ -24,16 +25,11 @@ public class GameLogic : MonoBehaviour
     private int spawnCount = 1;
     private int currentLevel = 1;
 
-    private bool Inited = false;
-
-    [SerializeField]
+    [Inject]
     private Spawner spawner;
 
-    private void Start()
+    public void Initialize()
     {
-        Ball.textureManager = textureManager;
-        Ball.menu = menu;
-
         menu.playGame += () =>
         {
             IsServer = true;

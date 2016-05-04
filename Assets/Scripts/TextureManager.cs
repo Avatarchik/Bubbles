@@ -14,8 +14,6 @@ public class TextureManager : MonoBehaviour, ITextureManager
     private readonly Dictionary<ResourceKey, Texture> cache = new Dictionary<ResourceKey, Texture>();
     private const int BASE_SIZE = 32;
 
-    public List<Texture> list = new List<Texture>();
-
     public void Awake()
     {
         StartPrepareTextures();

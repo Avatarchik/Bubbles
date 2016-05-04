@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Zenject;
 
 public class CommandHadler : MonoBehaviour
 {
+    [Inject]
     public TCPServer server;
 
     public static CommandHadler Instance

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
+using Zenject;
 
 public class Ball : MonoBehaviour
 {
-    public static ITextureManager textureManager;
-    public static Menu menu;
+    private Menu menu;
 
     private float speed = 30f;
     private BallSize size;
@@ -12,6 +12,7 @@ public class Ball : MonoBehaviour
     private GameObject cachedGo;
 
     private SpawnParams spawnParams;
+    private CommandHadler commandHadler;
 
     public bool ActiveSelf
     {
@@ -24,9 +25,11 @@ public class Ball : MonoBehaviour
         cachedRenderer = GetComponent<MeshRenderer>();
     }
 
-    public void Init(SpawnParams spawnParams)
+    public void Init(SpawnParams spawnParams , ITextureManager textureManager, Menu menu, CommandHadler commandHadler)
     {
+        this.menu = menu;
         this.spawnParams = spawnParams;
+        this.commandHadler = commandHadler;
 
         size = spawnParams.size;
 
@@ -51,6 +54,6 @@ public class Ball : MonoBehaviour
 
     public void DestroyBall()
     {
-        CommandHadler.Instance.PostCommand(new DestroyCommand(spawnParams.id));
+        commandHadler.PostCommand(new DestroyCommand(spawnParams.id));
     }
 }
