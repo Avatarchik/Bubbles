@@ -54,6 +54,10 @@ public class Ball : MonoBehaviour
 
     public void DestroyBall()
     {
+        if (!GameLogic.IsServer)
+        {
+            return;
+        }
         commandHadler.PostCommand(new DestroyCommand(spawnParams.id));
     }
 }
